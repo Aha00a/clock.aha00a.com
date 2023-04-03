@@ -3,14 +3,37 @@
     <head>
         <meta charset="UTF-8">
         <title>clock.aha00a.com</title>
+        <style>
+            html, body {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+            }
+        </style>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script>
+            var svgNamespace = "http://www.w3.org/2000/svg";
+            const svgTag = (tagName, attrs) => Object.entries(attrs).reduce((a, [k, v]) => a.attr(k, v), $(document.createElementNS(svgNamespace, tagName)));
             $(function () {
-                console.log('Hello, Clock!')
+                const $svg = $('.svg');
+
+                function drawClock() {
+                    const arrayTz = [0, 9, 13, 14, 15, 19, 20, 23]; // TODO
+                    arrayTz.map((v, i, a) => {
+                        $svg.append(svgTag('circle', {cx: '50%', cy: '50%', r: `${40 - i * 5}vmin`, stroke: 'black', fill: `hsl(${i * 360 / a.length}, 100%, 70%)`}));
+                    })
+                    $svg.append(svgTag('circle', {cx: '50%', cy: '50%', r: '1vmin', stroke: 'black', fill: 'black'}));
+                    const arrayHour = Array(12).fill(0).map((v, i) => i + 1);
+                    arrayHour.map(v => $svg.append(svgTag('text', {x: '50%', y: '50%', 'font-size': '5vmin'}).text(v)));
+
+                }
+
+                drawClock();
             });
         </script>
     </head>
     <body>
-        <canvas class="canvas"></canvas>
+        <svg class="svg" style="position: fixed; width: 100%; height: 100%"></svg>
     </body>
 </html>
