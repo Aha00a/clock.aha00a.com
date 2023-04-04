@@ -21,9 +21,9 @@
         </style>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script>
-            const svgTag = (tagName, attrs) => Object.entries(attrs).reduce((a, [k, v]) => a.attr(k, v), $(document.createElementNS("http://www.w3.org/2000/svg", tagName)));
-            const padLeft = (s, c, l) => [c.repeat(l) + s].map(v => v.substring(v.length - l))[0]
             $(function () {
+                const svgTag = (tagName, attrs) => Object.entries(attrs).reduce((a, [k, v]) => a.attr(k, v), $(document.createElementNS("http://www.w3.org/2000/svg", tagName)));
+                const padLeft = (s, c, l) => [c.repeat(l) + s].map(v => v.substring(v.length - l))[0]
                 const $svg = $('.svg');
                 const rotate = (x, y, rad, pivotX = 0, pivotY = 0) => {
                     const movedX = x - pivotX;
