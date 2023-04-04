@@ -9,31 +9,74 @@
                 padding: 0;
                 width: 100%;
                 height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .svg {
+                position: fixed;
+                width: 100vmin;
+                height: 100vmin;
             }
         </style>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script>
             var svgNamespace = "http://www.w3.org/2000/svg";
             const svgTag = (tagName, attrs) => Object.entries(attrs).reduce((a, [k, v]) => a.attr(k, v), $(document.createElementNS(svgNamespace, tagName)));
+            const padLeft = (s, c, l) => [c.repeat(l) + s].map(v => v.substring(v.length - l))[0]
             $(function () {
                 const $svg = $('.svg');
+                const rotate = (x, y, rad, pivotX = 0, pivotY = 0) => {
+                    const movedX = x - pivotX;
+                    const movedY = y - pivotY;
+                    const movedRotatedX = movedX * Math.cos(rad) - movedY * Math.sin(rad);
+                    const movedRotatedY = movedX * Math.sin(rad) + movedY * Math.cos(rad);
+                    const movedRotatedMovedX = movedRotatedX + pivotX;
+                    const movedRotatedMovedY = movedRotatedY + pivotY;
+                    return {x: movedRotatedMovedX, y: movedRotatedMovedY};
+                };
 
                 function drawClock() {
-                    const arrayTz = [0, 9, 13, 14, 15, 19, 20, 23]; // TODO
-                    arrayTz.map((v, i, a) => {
-                        $svg.append(svgTag('circle', {cx: '50%', cy: '50%', r: `${40 - i * 5}vmin`, stroke: 'black', fill: `hsl(${i * 360 / a.length}, 100%, 70%)`}));
-                    })
-                    $svg.append(svgTag('circle', {cx: '50%', cy: '50%', r: '1vmin', stroke: 'black', fill: 'black'}));
-                    const arrayHour = Array(12).fill(0).map((v, i) => i + 1);
-                    arrayHour.map(v => $svg.append(svgTag('text', {x: '50%', y: '50%', 'font-size': '5vmin'}).text(v)));
+                    // TODO: parse from querystring
+                    // TODO: fix to use UTC
+                    const arrayTz = [
+                        {name: 'KST', offset: 0},
+                        {name: 'EST', offset: 10},
+                        {name: 'GMT', offset: 15},
+                    ];
 
+                    const fontSize = 2;
+                    $svg.empty();
+                    const hoursInDay = 24;
+                    arrayTz.map(({name, offset}, i, a) => {
+                        const color = `hsl(${i * 360 / a.length}, 60%, 80%)`;
+                        $svg.append(svgTag('circle', {cx: '50%', cy: '50%', r: `${40 - i * 5}vmin`, stroke: 'black', fill: color}));
+                        Array(hoursInDay).fill(0).map((v, i) => i).map(h => {
+                            const coordination = rotate(50, i * 5 + 10 + 2.8, h * Math.PI * 2 / hoursInDay, 50, 50)
+                            $svg.append(svgTag('text', {
+                                x: `${coordination.x - fontSize / 2}vmin`,
+                                y: `${coordination.y + fontSize / 2}vmin`,
+                                'font-size': `${fontSize}vmin`
+                            }).css({fontFamily: 'sans-serif'}).text(padLeft((h + offset) % hoursInDay, '0', 2)));
+                        });
+                        $svg.append(svgTag('text', {x: `7vmin`, y: `${15 + i * fontSize * 2}vmin`, "font-size": `${fontSize * 2}vmin`, fill: color, 'font-family': 'monospace, sans-serif'}).text(name))
+                    })
+                    $svg.append(svgTag('circle', {cx: '50%', cy: '50%', r: `${40 - arrayTz.length * 5}vmin`, stroke: 'black', fill: 'white'}));
+                    $svg.append(svgTag('circle', {cx: '50%', cy: '50%', r: '1vmin', stroke: 'black', fill: 'black'}));
+                    const date = new Date();
+                    const hours = date.getHours();
+                    {
+                        const coordination = rotate(50, 10, hours * Math.PI * 2 / hoursInDay, 50, 50)
+                        $svg.append(svgTag('line', {x1: '50vmin', y1: '50vmin', x2: `${coordination.x}vmin`, y2: `${coordination.y}vmin`, stroke: 'rgba(0, 0, 0, 0.25)', 'stroke-width': '3vmin'}));
+                    }
                 }
 
                 drawClock();
+                // setInterval(drawClock, 1000);
             });
         </script>
     </head>
     <body>
-        <svg class="svg" style="position: fixed; width: 100%; height: 100%"></svg>
+        <svg class="svg"></svg>
     </body>
 </html>
