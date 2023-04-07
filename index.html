@@ -35,13 +35,16 @@
                     return {x: movedRotatedMovedX, y: movedRotatedMovedY};
                 };
 
+                const tzOffsetMinute = new Date().getTimezoneOffset();
+                const tzOffsetHour = tzOffsetMinute / 60;
+
                 function drawClock() {
                     // TODO: parse from querystring
                     // TODO: fix to use UTC
                     const arrayTz = [
-                        {name: 'KST', offset: 0},
-                        {name: 'EST', offset: 10},
-                        {name: 'GMT', offset: 15},
+                        {name: 'KST', offset: (9 + tzOffsetHour + 24) % 24},
+                        {name: 'EST', offset: (19 + tzOffsetHour + 24) % 24},
+                        {name: 'GMT', offset: (0 + tzOffsetHour + 24) % 24},
                     ];
 
                     const fontSize = 2;
@@ -56,7 +59,7 @@
                                 x: `${coordination.x - fontSize / 2}vmin`,
                                 y: `${coordination.y + fontSize / 2}vmin`,
                                 'font-size': `${fontSize}vmin`
-                            }).css({fontFamily: 'sans-serif'}).text(padLeft((h + offset) % hoursInDay, '0', 2)));
+                            }).css({fontFamily: 'sans-serif'}).text(padLeft((h + offset + hoursInDay) % hoursInDay, '0', 2)));
                         });
                         $svg.append(svgTag('text', {x: `7vmin`, y: `${15 + i * fontSize * 2}vmin`, "font-size": `${fontSize * 2}vmin`, fill: color, 'font-family': 'monospace, sans-serif'}).text(name))
                     })
