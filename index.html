@@ -41,6 +41,7 @@
                 function drawClock() {
                     // TODO: parse from querystring
                     // TODO: fix to use UTC
+                    // noinspection PointlessArithmeticExpressionJS
                     const arrayTz = [
                         {name: 'KST', offset: (9 + tzOffsetHour + 24) % 24},
                         {name: 'EST', offset: (19 + tzOffsetHour + 24) % 24},
